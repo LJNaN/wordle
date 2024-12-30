@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "less": "^4.2.1",
+    "lodash-es": "^4.17.21",
+    "npm": "^11.0.0",
     "pinyin-pro": "^3.26.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
