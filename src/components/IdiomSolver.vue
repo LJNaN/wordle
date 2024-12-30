@@ -92,10 +92,13 @@
     </button>
 
     <div class="mt-4">
-      <h3 class="font-bold mb-2">
+      <h3 class="font-bold mb-2 flex items-center gap-2">
         可能的成语：
         <span class="text-sm font-normal text-gray-600">
           (共 {{ matchingIdioms.length }} 个)
+        </span>
+        <span v-if="showCopyTip" class="text-sm text-green-600 transition-opacity">
+          已复制到剪贴板
         </span>
       </h3>
       <div v-if="matchingIdioms.length" class="grid grid-cols-4 gap-2">
@@ -116,7 +119,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { debounce } from 'lodash-es'
 import {
   findMatchingIdioms,
   type IdiomInfo,
@@ -138,6 +140,8 @@ const guessHistory = ref<Array<{
 
 const isValidInput = computed(() => currentGuess.value.length === 4)
 
+// 在 setup 中添加提示状态
+const showCopyTip = ref(false)
 
 // 切换状态的函数
 function toggleStatus(historyIndex: number, charIndex: number, type: 'initial' | 'final' | 'tone' | 'character') {
@@ -215,6 +219,16 @@ async function searchIdioms() {
 
 function selectIdiom(word: string) {
   currentGuess.value = word
+  navigator.clipboard.writeText(word)
+    .then(() => {
+      showCopyTip.value = true
+      setTimeout(() => {
+        showCopyTip.value = false
+      }, 2000)
+    })
+    .catch(err => {
+      console.error('复制失败：', err)
+    })
 }
 </script>
 
