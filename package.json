@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "less": "^4.2.1",
@@ -21,6 +22,7 @@
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-windicss": "^1.9.4",
+    "vitest": "^2.1.8",
     "vue-tsc": "^2.0.6",
     "windicss": "^3.5.6"
   }

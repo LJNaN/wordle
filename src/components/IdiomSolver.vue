@@ -125,6 +125,7 @@ import {
   type PinyinMatchInfo
 } from '../utils/pinyinUtils'
 import { pinyin } from 'pinyin-pro'
+console.log('pinyin: ', pinyin);
 
 const matchingIdioms = ref<IdiomInfo[]>([])
 const isSearching = ref(false)
@@ -137,17 +138,6 @@ const guessHistory = ref<Array<{
 
 const isValidInput = computed(() => currentGuess.value.length === 4)
 
-// 创建防抖的搜索函数
-const debouncedSearch = debounce(async () => {
-  isSearching.value = true
-  try {
-    matchingIdioms.value = findMatchingIdioms([], guessHistory.value)
-  } catch (error) {
-    console.error('搜索出错：', error)
-  } finally {
-    isSearching.value = false
-  }
-}, 1000)  // 1秒延迟
 
 // 切换状态的函数
 function toggleStatus(historyIndex: number, charIndex: number, type: 'initial' | 'final' | 'tone' | 'character') {

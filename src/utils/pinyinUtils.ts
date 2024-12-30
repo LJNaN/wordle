@@ -39,12 +39,12 @@ export function isPinyinMatch(
   }
 ): boolean {
   if (!input.pinyin && !input.tone && !input.initial) return true;
-  
+
   // 检查声母匹配
   if (input.initial && !target.initial.toLowerCase().startsWith(input.initial.toLowerCase())) {
     return false;
   }
-  
+
   // 检查拼音匹配（不含声调）
   if (input.pinyin) {
     // 移除声调标记后比较
@@ -53,12 +53,12 @@ export function isPinyinMatch(
       return false;
     }
   }
-  
+
   // 检查声调匹配
   if (input.tone !== undefined && target.num !== input.tone) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -91,10 +91,10 @@ export function checkGuess(guess: string, target: string): {
 } {
   const result: GuessResult[] = [];
   const pinyinInfo: PinyinMatchInfo[] = [];
-  
+
   const targetChars = target.split('');
   const usedPositions = new Set<number>();
-  
+
   // 获取目标词和猜测词的拼音信息
   const targetPinyin = pinyin(target, { type: 'all' });
   const guessPinyin = pinyin(guess, { type: 'all' });
@@ -123,7 +123,7 @@ export function checkGuess(guess: string, target: string): {
   for (let i = 0; i < 4; i++) {
     const targetInfo = targetPinyin[i];
     const guessInfo = guessPinyin[i];
-    
+
     // 移除声调标记
     const normalizedTargetFinal = targetInfo.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
     const normalizedGuessFinal = guessInfo.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
@@ -135,8 +135,8 @@ export function checkGuess(guess: string, target: string): {
       initialStatus: guessInfo.initial === targetInfo.initial ? MatchStatus.EXACT :
         targetPinyin.some(p => p.initial === guessInfo.initial) ? MatchStatus.PARTIAL : MatchStatus.NONE,
       finalStatus: normalizedGuessFinal === normalizedTargetFinal ? MatchStatus.EXACT :
-        targetPinyin.some(p => p.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "") === normalizedGuessFinal) ? 
-        MatchStatus.PARTIAL : MatchStatus.NONE,
+        targetPinyin.some(p => p.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "") === normalizedGuessFinal) ?
+          MatchStatus.PARTIAL : MatchStatus.NONE,
       toneStatus: guessInfo.num === targetInfo.num ? MatchStatus.EXACT :
         targetPinyin.some(p => p.num === guessInfo.num) ? MatchStatus.PARTIAL : MatchStatus.NONE
     };
@@ -152,8 +152,8 @@ export function findMatchingIdioms(
     tone?: number;
     initial?: string;
   }>,
-  guessHistory?: Array<{ 
-    guess: string; 
+  guessHistory?: Array<{
+    guess: string;
     result: GuessResult[];
     pinyinInfo: PinyinMatchInfo[];
   }>
@@ -171,7 +171,7 @@ export function findMatchingIdioms(
         cache.set(idiom, idiomInfo);
       }
 
-      if (!idiomInfo.pinyinInfo.every((info, index) => 
+      if (!idiomInfo.pinyinInfo.every((info, index) =>
         isPinyinMatch(info, inputs[index] || {}))
       ) {
         return false;
@@ -181,7 +181,7 @@ export function findMatchingIdioms(
       if (guessHistory && guessHistory.length > 0) {
         return guessHistory.every(({ guess, result, pinyinInfo }) => {
           const guessPinyinInfo = pinyin(guess, { type: 'all' });
-          
+
           // 检查每个字符的匹配状态
           for (let i = 0; i < 4; i++) {
             // 检查汉字匹配
@@ -190,12 +190,12 @@ export function findMatchingIdioms(
             } else if (result[i].status === MatchStatus.PARTIAL) {
               if (!idiom.includes(guess[i]) || idiom[i] === guess[i]) return false;
             } else if (result[i].status === MatchStatus.NONE) {
-              if (idiom.includes(guess[i]) && 
-                  !result.some((r, idx) => 
-                    idx !== i && 
-                    r.character === guess[i] && 
-                    (r.status === MatchStatus.EXACT || r.status === MatchStatus.PARTIAL)
-                  )) {
+              if (idiom.includes(guess[i]) &&
+                !result.some((r, idx) =>
+                  idx !== i &&
+                  r.character === guess[i] &&
+                  (r.status === MatchStatus.EXACT || r.status === MatchStatus.PARTIAL)
+                )) {
                 return false;
               }
             }
@@ -206,8 +206,8 @@ export function findMatchingIdioms(
             if (pinyinInfo[i].initialStatus === MatchStatus.EXACT) {
               if (targetInitial !== guessInitial) return false;
             } else if (pinyinInfo[i].initialStatus === MatchStatus.PARTIAL) {
-              if (!idiomInfo.pinyinInfo.some(p => p.initial === guessInitial) || 
-                  targetInitial === guessInitial) return false;
+              if (!idiomInfo.pinyinInfo.some(p => p.initial === guessInitial) ||
+                targetInitial === guessInitial) return false;
             } else if (pinyinInfo[i].initialStatus === MatchStatus.NONE) {
               if (idiomInfo.pinyinInfo.some(p => p.initial === guessInitial)) return false;
             }
@@ -218,11 +218,11 @@ export function findMatchingIdioms(
             if (pinyinInfo[i].finalStatus === MatchStatus.EXACT) {
               if (targetFinal !== guessFinal) return false;
             } else if (pinyinInfo[i].finalStatus === MatchStatus.PARTIAL) {
-              if (!idiomInfo.pinyinInfo.some(p => 
-                p.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "") === guessFinal) || 
+              if (!idiomInfo.pinyinInfo.some(p =>
+                p.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "") === guessFinal) ||
                 targetFinal === guessFinal) return false;
             } else if (pinyinInfo[i].finalStatus === MatchStatus.NONE) {
-              if (idiomInfo.pinyinInfo.some(p => 
+              if (idiomInfo.pinyinInfo.some(p =>
                 p.final.normalize('NFD').replace(/[\u0300-\u036f]/g, "") === guessFinal)) return false;
             }
 
@@ -232,8 +232,8 @@ export function findMatchingIdioms(
             if (pinyinInfo[i].toneStatus === MatchStatus.EXACT) {
               if (targetTone !== guessTone) return false;
             } else if (pinyinInfo[i].toneStatus === MatchStatus.PARTIAL) {
-              if (!idiomInfo.pinyinInfo.some(p => p.num === guessTone) || 
-                  targetTone === guessTone) return false;
+              if (!idiomInfo.pinyinInfo.some(p => p.num === guessTone) ||
+                targetTone === guessTone) return false;
             } else if (pinyinInfo[i].toneStatus === MatchStatus.NONE) {
               if (idiomInfo.pinyinInfo.some(p => p.num === guessTone)) return false;
             }
@@ -246,4 +246,39 @@ export function findMatchingIdioms(
     })
     .map(idiom => cache.get(idiom)!)
     .slice(0, 100);
+}
+
+
+
+console.log('removeToneFromPinyin: ', removeToneFromPinyin('lǜ'));
+export function removeToneFromPinyin(pinyin: string): string {
+  // 先处理所有的 v 和带声调的 ü 变体，转换为标准的 ü
+  return pinyin
+    .replace(/v/g, 'ü')
+    // 处理带声调的 ü
+    .replace(/ǖ/g, 'ü')  // 一声
+    .replace(/ǘ/g, 'ü')  // 二声
+    .replace(/ǚ/g, 'ü')  // 三声
+    .replace(/ǜ/g, 'ü')  // 四声
+    // 处理其他带声调的元音
+    .replace(/ā/g, 'a')
+    .replace(/á/g, 'a')
+    .replace(/ǎ/g, 'a')
+    .replace(/à/g, 'a')
+    .replace(/ē/g, 'e')
+    .replace(/é/g, 'e')
+    .replace(/ě/g, 'e')
+    .replace(/è/g, 'e')
+    .replace(/ī/g, 'i')
+    .replace(/í/g, 'i')
+    .replace(/ǐ/g, 'i')
+    .replace(/ì/g, 'i')
+    .replace(/ō/g, 'o')
+    .replace(/ó/g, 'o')
+    .replace(/ǒ/g, 'o')
+    .replace(/ò/g, 'o')
+    .replace(/ū/g, 'u')
+    .replace(/ú/g, 'u')
+    .replace(/ǔ/g, 'u')
+    .replace(/ù/g, 'u');
 } 
