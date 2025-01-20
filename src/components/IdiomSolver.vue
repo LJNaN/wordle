@@ -86,10 +86,15 @@
       </div>
     </div>
 
-    <button class="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400" @click="searchIdioms"
-      :disabled="isSearching">
-      {{ isSearching ? '搜索中...' : '查找匹配成语' }}
-    </button>
+    <div class="flex gap-2">
+      <button class="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400" @click="searchIdioms"
+        :disabled="isSearching">
+        {{ isSearching ? '搜索中...' : '查找匹配成语' }}
+      </button>
+      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" @click="resetAll">
+        重置
+      </button>
+    </div>
 
     <div class="mt-4">
       <h3 class="font-bold mb-2 flex items-center gap-2">
@@ -229,6 +234,13 @@ function selectIdiom(word: string) {
     .catch(err => {
       console.error('复制失败：', err)
     })
+}
+
+// 在 script setup 部分添加重置函数
+function resetAll() {
+  guessHistory.value = []
+  matchingIdioms.value = []
+  currentGuess.value = ''
 }
 </script>
 
